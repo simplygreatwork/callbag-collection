@@ -8,4 +8,4 @@ git clone git@github.com:simplygreatwork/test-suite.git
 
 # Run
 
-Load main.html in your browser and the view console output.
+Load `/main.html` in your browser and view the console output.
