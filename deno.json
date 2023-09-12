@@ -1,7 +1,0 @@
-{
-	"imports": {
-		"test-suite": "../test-suite/module.js",
-		"html-console": "../html-console/module.js",
-		"logging": "../logging/module.js"
-	}
-}

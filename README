@@ -1,0 +1,6 @@
+
+# Install
+
+git clone git@github.com:simplygreatwork/callbag-collection.git && \
+git clone git@github.com:simplygreatwork/binary-search.git && \
+git clone git@github.com:simplygreatwork/test_suite.git

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+		<title>Example</title>
+	</head>
+	<body>
+		<script type="importmap">{"imports": {
+			"collection": "./source/collection.js",
+			"Collection": "./source/Collection.js",
+			"callbags-sourced": "../callbag-cookbook/callbags-sourced/module.js",
+			"callbags-original": "../callbag-cookbook/callbags-original/module.js",
+			"binary-search": "../binary-search/module.js",
+			"test-suite": "../test-suite/module.js"
+		}}</script>
+		<script type="module">
+			
+			import { Collection } from 'Collection'
+			import { pipe } from 'callbags-sourced'
+			import { make_subject as subject } from 'callbags-sourced'
+			import { observe } from 'callbags-sourced'
+			import { take } from 'callbags-sourced'
+			import { index } from './functions/index.js'
+			import { timestamp } from './functions/timestamp.js'
+			import { validate } from './functions/validate.js'
+			import { insert } from './functions/insert.js'
+			import { search } from './functions/search.js'
+			import { range } from './functions/range.js'
+			import { sort } from './functions/sort.js'
+			import { test_suite_new } from 'test-suite'
+			import { test_suite_run } from 'test-suite'
+			
+			let suite = test_suite_new()
+			let { it } = suite
+			let collection
+			
+			it('collection initialize', function() {
+				
+				collection = new Collection('people')
+				collection.write = o => collection.subject(1, o)
+				collection.writer = pipe(
+					collection.subject = subject(),
+					timestamp(0),
+					validate(collection.validator),
+					insert(collection),
+					index('key', collection),
+					index('owner', collection)
+				)
+				observe()(collection.writer)
+				return true
+			})
+			
+			it('collection load', function() {
+				
+				collection.load()
+				return true
+			})
+			
+			it('collection write', function() {
+				
+				Array.from({ length: 8 }, function(a, index_a) {
+					Array.from({ length: 8 }, function(b, index_b) {
+						let index = (index_a * 8) + index_b
+						let owner = String.fromCharCode(index_b + 97)
+						collection.write({ key: `${index}`, value: index, owner: owner })
+					})
+				})
+				collection.write({ key: '1', value: 1.1, owner: 'zz'})
+				console.log(`collection size: ${collection.items.length}`)
+				return true
+			})
+			
+			it('collection read', function() {
+				
+				const read_ = subject()
+				const read = o => read_(1, o)
+				pipe(
+					read_,
+					search(
+						range('owner', { '>=': 'd' }),
+						range('owner', { '>=': 'c' }),
+						range('owner', { '>=': 'e' }),
+					),
+					sort('owner', '-'),
+					take(10000),
+					observe(o => console.log(JSON.stringify(o)))
+				)
+				read({ collection: collection })
+				return true
+			})
+			
+			it('collection read again', function() {
+				
+				const read_ = subject()
+				const read = o => read_(1, o)
+				pipe(
+					read_,
+					search(
+						range('owner', { '>=': 'c' }),
+						range('owner', { '<=': 'c' }),
+						range('owner', { '>=': 'c', '<=': 'c' }),
+						range('owner', { '>=': 'c', 'sort': '-' }),
+						range('owner', { '<=': 'c', 'sort': '-' }),
+						range('owner', { '>=': 'c', '<=': 'c', 'sort': '-' }),
+					),
+					sort('owner', '+'),
+					take(10000),
+					observe(o => console.log(JSON.stringify(o)))
+				)
+				read({ collection: collection })
+				return true
+			})
+			
+			let result = test_suite_run(suite)
+			if (result) console.log(`All tests passed.`)
+			else console.log(`Some tests failed.`)
+			
+		</script>
+	</body>
+</html>
