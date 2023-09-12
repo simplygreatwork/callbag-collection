@@ -11,6 +11,7 @@
 			"callbags-sourced": "../callbag-cookbook/callbags-sourced/module.js",
 			"callbags-original": "../callbag-cookbook/callbags-original/module.js",
 			"binary-search": "../binary-search/module.js",
+			"html-console": "../html-console/module.js",
 			"test-suite": "../test-suite/module.js"
 		}}</script>
 		<script type="module">
@@ -29,7 +30,9 @@
 			import { sort } from './functions/sort.js'
 			import { test_suite_new } from 'test-suite'
 			import { test_suite_run } from 'test-suite'
+			import { console_init } from 'html-console'
 			
+			console_init('body')
 			let suite = test_suite_new()
 			let { it } = suite
 			let collection
